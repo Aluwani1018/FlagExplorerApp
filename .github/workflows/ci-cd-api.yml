@@ -18,8 +18,8 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
-      run: dotnet restore FlagExplorerApp.Api.sln
+      run: dotnet restore FlagExplorerApp.sln
     - name: Build
-      run: dotnet build FlagExplorerApp.Api.sln --no-restore
+      run: dotnet build FlagExplorerApp.sln --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
