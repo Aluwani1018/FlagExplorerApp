@@ -87,7 +87,7 @@ countries-app/
 
 ## Testing
 
-This project uses Jest for unit and integration testing. Tests are located alongside their corresponding components in `__tests__` folders.
+This project uses Jest for unit and integration testing. Tests are located alongside their corresponding components.
 
 Run the tests:
 
@@ -109,7 +109,6 @@ The project includes a GitHub Actions workflow for continuous integration and de
 2. Runs linting checks
 3. Executes all tests
 4. Generates a test coverage report
-5. Deploys to production (when merging to the main branch)
 
 ## API Integration
 

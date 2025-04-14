@@ -12,7 +12,7 @@ jobs:
    runs-on: ubuntu-latest  
    defaults:
       run:
-        working-directory: ./FlagExplorerApp.API
+        working-directory: FlagExplorerApp.API
    steps:  
    - name: Checkout Code  
      uses: actions/checkout@v3  
