@@ -5,3 +5,11 @@ services:
       context: .
       dockerfile: FlagExplorerApp.Api/Dockerfile
 
+  cosmosdb:
+    image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator
+    networks:
+      - flagexplorer-network
+
+networks:
+  flagexplorer-network:
+    driver: bridge

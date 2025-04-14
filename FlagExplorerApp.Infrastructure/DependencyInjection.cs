@@ -13,10 +13,6 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        Console.WriteLine($"AccountEndpoint: {configuration["CosmosDb:AccountEndpoint"]}");
-        Console.WriteLine($"AccountKey: {configuration["CosmosDb:AccountKey"]}");
-        Console.WriteLine($"DatabaseName: {configuration["CosmosDb:DatabaseName"]}");
-
         services.AddCosmosRepository(options =>
         {
             options.CosmosConnectionString = $"AccountEndpoint={configuration["CosmosDb:AccountEndpoint"]};AccountKey={configuration["CosmosDb:AccountKey"]};";

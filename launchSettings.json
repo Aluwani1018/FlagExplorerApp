@@ -6,7 +6,7 @@
         "serviceActions": {
             "flagexplorerapp.api": "StartDebugging"
         }
-    },
+    }
     "FlagExplorerApp.Api": {
       "commandName": "Project",
       "launchBrowser": true,

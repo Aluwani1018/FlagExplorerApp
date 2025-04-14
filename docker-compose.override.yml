@@ -1,59 +1,43 @@
-services:
-  flagexplorerapp.api:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=8080
-      - ASPNETCORE_HTTPS_PORTS=8082
-      - CosmosDb__AccountEndpoint=https://cosmosdb:8081/
-      - CosmosDb__AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRp0EJg==
-      - CosmosDb__DatabaseName=FlagExplorerDb
-    ports:
-      - "8080:8080"
-      - "8082:8081"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-    networks:
-      - flagexplorer-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+services:  
+ flagexplorerapp.api:  
+   environment:  
+     - ASPNETCORE_ENVIRONMENT=Development  
+     - ASPNETCORE_HTTP_PORTS=8080  
+     - ASPNETCORE_HTTPS_PORTS=8082  
+     - CosmosDb__AccountEndpoint=https://cosmosdb:8081/  
+     - CosmosDb__AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRp0EJg==  
+     - CosmosDb__DatabaseName=FlagExplorerDb  
+   ports:  
+     - "8080:8080"  
+     - "8082:8082"  
+   volumes:  
+     - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro  
+     - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro  
+   networks:  
+     - flagexplorer-network  
 
-  cosmosdb:
-    image: pull mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator
-    ports:
-      - "8081:8081" # REST API
-      - "10251:10251"
-      - "10252:10252"
-      - "10253:10253"
-      - "10254:10254"
-      - "10255:10255"
-    environment:
-      AZURE_COSMOS_EMULATOR_PARTITION_COUNT: 1
-      AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE: "true"
-    networks:
-      - flagexplorer-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "https://cosmosdb:8081/_explorer/index.html"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+ cosmosdb:  
+   image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator  
+   environment:  
+     - AZURE_COSMOS_EMULATOR_PARTITION_COUNT=3  
+     - AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE=true  
+     - AZURE_COSMOS_EMULATOR_IP_ADDRESS_OVERRIDE=127.0.0.1  
+     - AZURE_COSMOS_EMULATOR_NO_SSL=true
+   ports: 
+     - "8081:8081" # Added to expose the Cosmos DB endpoint 
+     - "10250:10250"  
+     - "10251:10251"  
+     - "10252:10252"  
+     - "10253:10253"  
+     - "10254:10254"  
+   networks:  
+     - flagexplorer-network  
+   volumes:  
+     - cosmosdbdata:/data  
 
-  app:
-    build:
-      context: .
-    environment:
-      CosmosDb__AccountEndpoint: "https://cosmosdb:8081/"
-      CosmosDb__AccountKey: "C2y6yDjf5/R+ob0N8A7Cgv30VRp0EJg=="
-      CosmosDb__DatabaseName: "FlagExplorerDb"
-    depends_on:
-      - cosmosdb
-    networks:
-      - flagexplorer-network
+networks:  
+ flagexplorer-network:  
+     driver: bridge  
 
-networks:
-  default:
-    name: flagexplorer-network
-    driver: bridge
+volumes:  
+ cosmosdbdata:
