@@ -5,7 +5,11 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
-
+  # Add permissions for handling artifacts
+permissions:
+  contents: read
+  actions: read
+  checks: write
 jobs:
   web-build-and-test:
     runs-on: ubuntu-latest
