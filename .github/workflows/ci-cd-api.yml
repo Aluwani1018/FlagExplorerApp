@@ -12,7 +12,7 @@ jobs:
    runs-on: ubuntu-latest  
    defaults:
       run:
-        working-directory: ./FlagExplorerApp.API
+        working-directory: FlagExplorerApp.API
    steps:  
    - name: Checkout Code  
      uses: actions/checkout@v3  
@@ -23,7 +23,9 @@ jobs:
        dotnet-version: '8.x'  
 
    - name: Build Application  
-     run: dotnet build --configuration Release  
+     run: |  
+      cd /home/runner/work/FlagExplorerApp/FlagExplorerApp.API  
+      dotnet build --configuration Release    
 
    - name: Log in to Container Registry  
      run: echo "${{ secrets.ACR_PASSWORD }}" | docker login ${{ secrets.CONTAINER_REGISTRY }} -u ${{ secrets.ACR_USERNAME }} --password-stdin  
