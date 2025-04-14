@@ -19,7 +19,7 @@ public class CountryDetailController : ControllerBase
     /// <summary>
     /// Retrieve details about a specific country.
     /// </summary>
-    /// <param name="name">The name of the country.</param>
+    /// <param name="name">The name of the country to retrieve details for.</param>
     /// <returns>Details about the country.</returns>
     [HttpGet("{name}")]
     [ProducesResponseType(StatusCodes.Status200OK)]

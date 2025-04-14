@@ -1,13 +1,7 @@
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
-using MediatR;
 using FlagExplorerApp.Application.Countries.GetCountries; // Ensure this namespace is included
 using FlagExplorerApp.Application;
 using FlagExplorerApp.Infrastructure;
-using FlagExplorerApp.Domain.Entities;
-using FlagExplorerApp.Application.Country;
-using FlagExplorerApp.Application.CountryDetail;
-using FlagExplorerApp.Api.Filters; // Add this namespace if the AddApplication extension method is defined here
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,8 +20,6 @@ builder.Services.AddSwaggerGen(c =>
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     c.IncludeXmlComments(xmlPath);
-
-    c.OperationFilter<SwaggerPathOperationFilter>();
 });
 
 
