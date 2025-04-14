@@ -1,0 +1,7 @@
+services:
+  flagexplorerapp.api:
+    image: ${DOCKER_REGISTRY-}flagexplorerappapi
+    build:
+      context: .
+      dockerfile: FlagExplorerApp.Api/Dockerfile
+

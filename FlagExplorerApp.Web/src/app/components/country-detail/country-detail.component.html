@@ -1,0 +1,46 @@
+<section class="container">
+  <button class="back-button" (click)="goBack()">
+    ← Back to All Countries
+  </button>
+
+  <div *ngIf="loading" class="loading">
+    <p>Loading country details...</p>
+  </div>
+
+  <div *ngIf="error" class="error">
+    <p>Error loading country details. Please try again later.</p>
+  </div>
+
+  <div *ngIf="country && !loading" class="country-detail">
+    <div class="country-header">
+      <div class="flag-container">
+        <img
+          [src]="country.flags.svg"
+          [alt]="country.flags.alt || country.name.common + ' flag'"
+          class="country-flag"
+        />
+      </div>
+      <div class="country-title">
+        <h1>{{ country.name.common }}</h1>
+        <h3>{{ country.name.official }}</h3>
+      </div>
+    </div>
+
+    <div class="country-info">
+      <div class="info-card">
+        <h3>Capital</h3>
+        <p *ngIf="country.capital && country.capital.length > 0">
+          {{ country.capital.join(", ") }}
+        </p>
+        <p *ngIf="!country.capital || country.capital.length === 0">
+          No capital information available
+        </p>
+      </div>
+
+      <div class="info-card">
+        <h3>Population</h3>
+        <p>{{ country.population.toLocaleString() }}</p>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,29 @@
+<section class="container">
+  <h1>Countries of the World</h1>
+
+  <div *ngIf="loading" class="loading">
+    <p>Loading countries...</p>
+  </div>
+
+  <div *ngIf="error" class="error">
+    <p>Error loading countries. Please try again later.</p>
+    <button (click)="loadCountries()">Try Again</button>
+  </div>
+
+  <div *ngIf="!loading && !error" class="countries-grid">
+    <div
+      *ngFor="let country of countries"
+      class="country-card"
+      [routerLink]="['/country', country.cca3]"
+    >
+      <div class="flag-container">
+        <img
+          [src]="country.flags.svg"
+          [alt]="country.flags.alt || country.name.common + ' flag'"
+          class="country-flag"
+        />
+      </div>
+      <h3>{{ country.name.common }}</h3>
+    </div>
+  </div>
+</section>
