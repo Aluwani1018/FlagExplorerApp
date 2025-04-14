@@ -37,15 +37,3 @@ jobs:
 
       - name: Build web
         run: npm run build -- --configuration production
-
-      - name: Upload test coverage
-        uses: actions/upload-artifact@v3
-        with:
-          name: web-coverage
-          path: FlagExplorerApp.Web/coverage/
-
-      - name: Upload web build
-        uses: actions/upload-artifact@v3
-        with:
-          name: web-build
-          path: FlagExplorerApp.Web/dist/
