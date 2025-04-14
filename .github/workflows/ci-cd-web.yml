@@ -2,34 +2,29 @@ name: FlagExplorerApp.Web CI/CD
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
-  # Add permissions for handling artifacts
+    branches: [main]
+
+# Add permissions for handling artifacts
 permissions:
   contents: read
   actions: read
   checks: write
+
 jobs:
   web-build-and-test:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./FlagExplorerApp.Web
-
-    strategy:
-      matrix:
-        node-version: [18.x]
-
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: "npm"
-          cache-dependency-path: web/package-lock.json
+          node-version: "18"
 
       - name: Install web dependencies
         run: npm ci
@@ -47,10 +42,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: web-coverage
-          path: web/coverage/
+          path: FlagExplorerApp.Web/coverage/
 
       - name: Upload web build
         uses: actions/upload-artifact@v3
         with:
           name: web-build
-          path: web/dist/
+          path: FlagExplorerApp.Web/dist/
