@@ -9,13 +9,17 @@ public class SwaggerPathOperationFilter : IOperationFilter
     {
         if (context.ApiDescription.RelativePath == "countries/{name}")
         {
-            operation.Parameters.Add(new OpenApiParameter
+            if (operation.Parameters.All(p => p.Name != "name"))
             {
-                Name = "name",
-                In = ParameterLocation.Path,
-                Required = true,
-                Schema = new OpenApiSchema { Type = "string" }
-            });
+                operation.Parameters.Add(new OpenApiParameter
+                {
+                    Name = "name",
+                    In = ParameterLocation.Path,
+                    Required = true,
+                    Description = "The name of the country to retrieve details for.",
+                    Schema = new OpenApiSchema { Type = "string" }
+                });
+            }
         }
     }
 }

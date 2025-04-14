@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FlagExplorerApp.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("countries")]
 public class CountryController : ControllerBase
 {
     private readonly IMediator _mediator;

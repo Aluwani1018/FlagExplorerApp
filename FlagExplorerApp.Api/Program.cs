@@ -23,27 +23,9 @@ builder.Services.AddSwaggerGen(c =>
         Version = "1.0.0"
     });
 
-    c.MapType<CountryDto>(() => new Microsoft.OpenApi.Models.OpenApiSchema
-    {
-        Type = "object",
-        Properties = new Dictionary<string, Microsoft.OpenApi.Models.OpenApiSchema>
-        {
-            { "name", new Microsoft.OpenApi.Models.OpenApiSchema { Type = "string" } },
-            { "flag", new Microsoft.OpenApi.Models.OpenApiSchema { Type = "string" } }
-        }
-    });
-
-    c.MapType<CountryDetailDto>(() => new Microsoft.OpenApi.Models.OpenApiSchema
-    {
-        Type = "object",
-        Properties = new Dictionary<string, Microsoft.OpenApi.Models.OpenApiSchema>
-        {
-            { "name", new Microsoft.OpenApi.Models.OpenApiSchema { Type = "string" } },
-            { "population", new Microsoft.OpenApi.Models.OpenApiSchema { Type = "integer" } },
-            { "capital", new Microsoft.OpenApi.Models.OpenApiSchema { Type = "string" } },
-            { "flag", new Microsoft.OpenApi.Models.OpenApiSchema { Type = "string" } }
-        }
-    });
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
 
     c.OperationFilter<SwaggerPathOperationFilter>();
 });

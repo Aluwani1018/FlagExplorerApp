@@ -14,11 +14,7 @@ namespace FlagExplorerApp.Application.CountryDetail
 
         public void Mapping(Profile profile)
         {
-            profile.CreateMap<DomainCountryDetail, CountryDetailDto>()
-                    .ForMember(d => d.Name, opt => opt.MapFrom(src => src.Name))
-                    .ForMember(d => d.Population, opt => opt.MapFrom(src => src.Population))
-                      .ForMember(d => d.Capital, opt => opt.MapFrom(src => src.Capital))
-                    .ForMember(d => d.Flag, opt => opt.MapFrom(src => src.Flag));
+            profile.CreateMap<DomainCountryDetail, CountryDetailDto>();
         }
     }
 }

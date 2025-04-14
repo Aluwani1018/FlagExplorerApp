@@ -11,8 +11,6 @@ public record class CountryDto : IMapFrom<DomainCountry>
 
     public void Mapping(Profile profile)
     {
-        profile.CreateMap<DomainCountry, CountryDto>()
-                   .ForMember(d => d.Name, opt => opt.MapFrom(src => src.Name))
-                   .ForMember(d => d.Flag, opt => opt.MapFrom(src => src.Flag));
+        profile.CreateMap<DomainCountry, CountryDto>();
     }
 }
