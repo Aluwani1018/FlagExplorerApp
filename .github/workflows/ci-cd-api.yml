@@ -10,7 +10,9 @@ jobs:
  build:  
    name: Build and Push Docker Image  
    runs-on: ubuntu-latest  
-
+   defaults:
+      run:
+        working-directory: ./FlagExplorerApp.API
    steps:  
    - name: Checkout Code  
      uses: actions/checkout@v3  
