@@ -1,0 +1,52 @@
+name: FlagExplorerApp.Web CI/CD
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  web-build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./FlagExplorerApp.Web
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install web dependencies
+        run: npm ci
+
+      - name: Run web linting
+        run: npm run lint || true
+
+      - name: Run web tests
+        run: npm test -- --coverage
+
+      - name: Build web
+        run: npm run build -- --configuration production
+
+      - name: Upload test coverage
+        uses: actions/upload-artifact@v3
+        with:
+          name: web-coverage
+          path: web/coverage/
+
+      - name: Upload web build
+        uses: actions/upload-artifact@v3
+        with:
+          name: web-build
+          path: web/dist/
