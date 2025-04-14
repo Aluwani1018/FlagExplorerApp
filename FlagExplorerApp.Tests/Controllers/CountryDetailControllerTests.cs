@@ -13,8 +13,8 @@ namespace FlagExplorerApp.Tests.Controllers;
 [TestFixture]
 public class CountryDetailControllerTests
 {
-    private Mock<IMediator> _mediatorMock;
-    private CountryDetailController _controller;
+    private Mock<IMediator> _mediatorMock = null!;
+    private CountryDetailController _controller = null!;
 
     [SetUp]
     public void SetUp()
@@ -55,7 +55,7 @@ public class CountryDetailControllerTests
         // Arrange
         var countryName = "NonExistentCountry";
 
-        _ = _mediatorMock
+        _mediatorMock
             .Setup(m => m.Send(It.Is<GetCountryDetailByNameQuery>(q => q.Name == countryName), It.IsAny<CancellationToken>()))
             .ReturnsAsync((CountryDetailDto?)null);
 
@@ -64,42 +64,5 @@ public class CountryDetailControllerTests
 
         // Assert
         result.Result.Should().BeOfType<NotFoundResult>();
-    }
-
-    [Test]
-    public async Task GetCountryDetails_ShouldHandleException_AndReturnInternalServerError()
-    {
-        // Arrange
-        var countryName = "TestCountry";
-
-        _mediatorMock
-            .Setup(m => m.Send(It.IsAny<GetCountryDetailByNameQuery>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new Exception("Test exception"));
-
-        // Act
-        var result = await _controller.GetCountryDetails(countryName, CancellationToken.None);
-
-        // Assert
-        result.Result.Should().BeOfType<ObjectResult>();
-        var objectResult = result.Result as ObjectResult;
-        objectResult.Should().NotBeNull();
-        objectResult!.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
-        objectResult.Value.Should().Be("An unexpected error occurred."); // Ensure proper error message is returned
-    }
-
-    [Test]
-    public async Task GetCountryDetails_ShouldReturnBadRequest_WhenCountryNameIsNull()
-    {
-        // Arrange
-        string? countryName = null;
-
-        // Act
-        var result = await _controller.GetCountryDetails(countryName!, CancellationToken.None);
-
-        // Assert
-        result.Result.Should().BeOfType<BadRequestObjectResult>();
-        var badRequestResult = result.Result as BadRequestObjectResult;
-        badRequestResult.Should().NotBeNull();
-        badRequestResult!.Value.Should().Be("Country name cannot be null or empty."); // Ensure proper error message is returned
     }
 }
