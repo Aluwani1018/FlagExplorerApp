@@ -2,9 +2,9 @@ name: FlagExplorerApp.Web CI/CD
 
 on:
   push:
-    branches: [main]
+    branches: '**'
   pull_request:
-    branches: [main]
+    branches: [master]
 
 # Add permissions for handling artifacts
 permissions:
