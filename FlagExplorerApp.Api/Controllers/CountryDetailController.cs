@@ -29,6 +29,8 @@ public class CountryDetailController : ControllerBase
 
     public async Task<ActionResult<CountryDetailDto>> GetCountryDetails(string name, CancellationToken cancellationToken)
     {
+        //For error handling I would suggest using a middleware or a global exception handler
+        //to avoid repeating the same code in every controller action.
         if (string.IsNullOrWhiteSpace(name))
         {
             return BadRequest(new ErrorResponse { Message = "The country name cannot be null or empty." });
