@@ -1,4 +1,5 @@
-﻿using FlagExplorerApp.Application.CountryDetail;
+﻿using FlagExplorerApp.Api.Models;
+using FlagExplorerApp.Application.CountryDetail;
 using FlagExplorerApp.Application.CountryDetails.GetCountryDetailByName;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -30,27 +31,32 @@ public class CountryDetailController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(name))
         {
-            return BadRequest(new { Message = "The country name cannot be null or empty." });
+            return BadRequest(new ErrorResponse { Message = "The country name cannot be null or empty." });
         }
 
         try
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return BadRequest(new ErrorResponse { Message = "The operation was canceled by the client." });
+            }
+
             var countryDetail = await _mediator.Send(new GetCountryDetailByNameQuery(name), cancellationToken);
 
             if (countryDetail == null)
             {
-                return NotFound(new { Message = $"Country with name '{name}' was not found." });
+                return NotFound(new ErrorResponse { Message = $"Country with name '{name}' was not found." });
             }
 
             return Ok(countryDetail);
         }
         catch (OperationCanceledException)
         {
-            return BadRequest(new { Message = "The operation was canceled by the client." });
+            return BadRequest(new ErrorResponse { Message = "The operation was canceled by the client." });
         }
         catch (Exception ex)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, new
+            return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse
             {
                 Message = "An unexpected error occurred while processing your request.",
                 Details = ex.Message 

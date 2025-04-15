@@ -1,4 +1,5 @@
-﻿using FlagExplorerApp.Application.Countries.GetCountries;
+﻿using FlagExplorerApp.Api.Models;
+using FlagExplorerApp.Application.Countries.GetCountries;
 using FlagExplorerApp.Application.Country;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -33,11 +34,11 @@ public class CountryController : ControllerBase
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(new { Message = ex.Message, Details = ex.StackTrace });
+            return BadRequest(new ErrorResponse { Message = ex.Message, Details = ex.StackTrace });
         }
         catch (OperationCanceledException)
         {
-            return BadRequest(new { Message = "The operation was canceled by the client." });
+            return BadRequest(new ErrorResponse { Message = "The operation was canceled by the client." });
         }
         catch (Exception ex)
         {

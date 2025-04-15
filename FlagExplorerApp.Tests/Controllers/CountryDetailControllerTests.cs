@@ -1,9 +1,11 @@
 ﻿using FlagExplorerApp.Api.Controllers;
+using FlagExplorerApp.Api.Models;
 using FlagExplorerApp.Application.CountryDetail;
 using FlagExplorerApp.Application.CountryDetails.GetCountryDetailByName;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -13,8 +15,8 @@ namespace FlagExplorerApp.Tests.Controllers;
 [TestFixture]
 public class CountryDetailControllerTests
 {
-    private Mock<IMediator> _mediatorMock = null!;
-    private CountryDetailController _controller = null!;
+    private Mock<IMediator> _mediatorMock;
+    private CountryDetailController _controller;
 
     [SetUp]
     public void SetUp()
@@ -24,16 +26,56 @@ public class CountryDetailControllerTests
     }
 
     [Test]
-    public async Task GetCountryDetails_ShouldReturnOkResult_WhenCountryExists()
+    public async Task GetCountryDetails_ShouldReturnBadRequest_WhenNameIsNullOrEmpty()
     {
         // Arrange
-        var countryName = "TestCountry";
+        string invalidName = null;
+
+        // Act
+        var result = await _controller.GetCountryDetails(invalidName, CancellationToken.None);
+
+        // Assert
+        var badRequestResult = result.Result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+
+        // Cast the Value to the expected type
+        var response = badRequestResult.Value as ErrorResponse;
+        response.Should().NotBeNull();
+        response.Message.Should().Be("The country name cannot be null or empty.");
+    }
+
+    [Test]
+    public async Task GetCountryDetails_ShouldReturnNotFound_WhenCountryDoesNotExist()
+    {
+        // Arrange
+        string countryName = "NonExistentCountry";
+        _mediatorMock
+            .Setup(m => m.Send(It.Is<GetCountryDetailByNameQuery>(q => q.Name == countryName), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((CountryDetailDto)null);
+
+        // Act
+        var result = await _controller.GetCountryDetails(countryName, CancellationToken.None);
+
+        // Assert
+        var notFoundResult = result.Result as NotFoundObjectResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult.StatusCode.Should().Be(404);
+        var response = notFoundResult.Value as ErrorResponse;
+        response.Message.Should().Be($"Country with name '{countryName}' was not found.");
+    }
+
+    [Test]
+    public async Task GetCountryDetails_ShouldReturnOk_WhenCountryExists()
+    {
+        // Arrange
+        string countryName = "TestCountry";
         var countryDetail = new CountryDetailDto
         {
-            Name = countryName,
-            Population = 1000000,
+            Name = "TestCountry",
             Capital = "TestCapital",
-            Flag = "TestFlagUrl"
+            Population = 1000,
+            Flag = "TestFlag"
         };
 
         _mediatorMock
@@ -44,25 +86,51 @@ public class CountryDetailControllerTests
         var result = await _controller.GetCountryDetails(countryName, CancellationToken.None);
 
         // Assert
-        result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = result.Result as OkObjectResult;
-        okResult!.Value.Should().BeEquivalentTo(countryDetail);
+        okResult.Should().NotBeNull();
+        okResult.StatusCode.Should().Be(200);
+        okResult.Value.Should().BeEquivalentTo(countryDetail);
     }
 
     [Test]
-    public async Task GetCountryDetails_ShouldReturnNotFound_WhenCountryDoesNotExist()
+    public async Task GetCountryDetails_ShouldReturnBadRequest_WhenOperationIsCanceled()
     {
         // Arrange
-        var countryName = "NonExistentCountry";
+        string countryName = "TestCountry";
+        var canceledTokenSource = new CancellationTokenSource();
+        canceledTokenSource.Cancel();
 
+        // Act
+        var result = await _controller.GetCountryDetails(countryName, canceledTokenSource.Token);
+
+        // Assert
+        var badRequestResult = result.Result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+
+        var response = badRequestResult.Value as ErrorResponse;
+        response.Message.Should().Be("The operation was canceled by the client.");
+    }
+
+    [Test]
+    public async Task GetCountryDetails_ShouldReturnInternalServerError_WhenUnhandledExceptionOccurs()
+    {
+        // Arrange
+        string countryName = "TestCountry";
         _mediatorMock
-            .Setup(m => m.Send(It.Is<GetCountryDetailByNameQuery>(q => q.Name == countryName), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((CountryDetailDto?)null);
+            .Setup(m => m.Send(It.IsAny<GetCountryDetailByNameQuery>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new Exception("Unexpected error"));
 
         // Act
         var result = await _controller.GetCountryDetails(countryName, CancellationToken.None);
 
         // Assert
-        result.Result.Should().BeOfType<NotFoundResult>();
+        var statusResult = result.Result as ObjectResult;
+        statusResult.Should().NotBeNull();
+        statusResult.StatusCode.Should().Be(500);
+
+        var response = statusResult.Value as ErrorResponse;
+        response.Message.Should().Be("An unexpected error occurred while processing your request.");
+        response.Details.Should().Be("Unexpected error");
     }
 }
