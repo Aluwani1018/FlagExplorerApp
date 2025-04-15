@@ -16,7 +16,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
     - name: Build and Run Docker Image
-      working-directory: ./repos/FlagExplorerApp
+      working-directory: home/runner/work/FlagExplorerApp/
       run: |
         docker build -t flagexplorerapp-api -f path/to/Dockerfile .
         docker run -d --name flagexplorerapp-api-container -p 8080:80 flagexplorerapp-api
