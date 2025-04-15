@@ -20,7 +20,7 @@ FlagExplorerApp is a .NET 8 application designed to manage and explore country a
 
 - **FlagExplorerApp.IntegrationTests**: Integration tests for end-to-end scenarios.
 
-- **CI-CD**: YML files configured to execute on github actions, this is in (./.github\workflows), file name ci-cd-api.yml for api and ci-cd-api-web.yml for web.
+- **CI-CD**: YML files configured to execute on github actions, this is in (./.github/workflows), file name ci-cd-api.yml for api and ci-cd-api-web.yml for web.
 
 ## Getting Started
 
