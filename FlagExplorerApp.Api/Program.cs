@@ -2,6 +2,7 @@ using System.Reflection;
 using FlagExplorerApp.Application.Countries.GetCountries; // Ensure this namespace is included
 using FlagExplorerApp.Application;
 using FlagExplorerApp.Infrastructure;
+using FlagExplorerApp.Application.Common.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,9 @@ builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
+
+// Register the exception-handling middleware
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

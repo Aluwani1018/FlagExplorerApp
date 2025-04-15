@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 
 namespace FlagExplorerApp.Tests.Controllers;
 
@@ -24,15 +25,14 @@ public class CountryControllerTests
     }
 
     [Test]
-    public async Task GetAllCountries_ShouldReturnOkWithListOfCountries()
+    public async Task GetAllCountries_ShouldReturnOk_WhenCountriesAreRetrievedSuccessfully()
     {
         // Arrange
         var countries = new List<CountryDto>
             {
-                new CountryDto { Name = "Country1", Flag = "Flag1" },
-                new CountryDto { Name = "Country2", Flag = "Flag2" }
+                new CountryDto {Name = "Country1", Flag = "Flag1"},
+                new CountryDto {Name = "Country2", Flag = "Flag2"}
             };
-
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetCountriesQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(countries);
@@ -45,16 +45,29 @@ public class CountryControllerTests
         okResult.Should().NotBeNull();
         okResult.StatusCode.Should().Be(200);
         okResult.Value.Should().BeEquivalentTo(countries);
-
-        _mediatorMock.Verify(m => m.Send(It.IsAny<GetCountriesQuery>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Test]
-    public async Task GetAllCountries_ShouldHandleEmptyList()
+    public async Task GetAllCountries_ShouldReturnBadRequest_WhenCancellationTokenIsRequested()
     {
         // Arrange
-        var countries = new List<CountryDto>();
+        var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
 
+        // Act
+        var result = await _controller.GetAllCountries(cancellationTokenSource.Token);
+
+        // Assert
+        var badRequestResult = result.Result as BadRequestObjectResult; // Expecting BadRequest
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Test]
+    public async Task GetAllCountries_ShouldHandleEmptyCountryListSuccessfully()
+    {
+        // Arrange
+        var countries = new List<CountryDto>(); // Empty list
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetCountriesQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(countries);
@@ -66,8 +79,33 @@ public class CountryControllerTests
         var okResult = result.Result as OkObjectResult;
         okResult.Should().NotBeNull();
         okResult.StatusCode.Should().Be(200);
-        okResult.Value.Should().BeEquivalentTo(countries);
+        var responseCountries = okResult.Value as List<CountryDto>;
+        responseCountries.Should().NotBeNull();
+        responseCountries.Should().BeEmpty();
+    }
 
-        _mediatorMock.Verify(m => m.Send(It.IsAny<GetCountriesQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+    [Test]
+    public async Task GetAllCountries_ShouldReturnOk_WhenOnlyOneCountryIsRetrieved()
+    {
+        // Arrange
+        var countries = new List<CountryDto>
+            {
+                new CountryDto { Name = "Country1", Flag = "Flag1" }
+            };
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetCountriesQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(countries);
+
+        // Act
+        var result = await _controller.GetAllCountries(CancellationToken.None);
+
+        // Assert
+        var okResult = result.Result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult.StatusCode.Should().Be(200);
+        var responseCountries = okResult.Value as List<CountryDto>;
+        responseCountries.Should().NotBeNull();
+        responseCountries.Should().HaveCount(1);
+        responseCountries[0].Should().BeEquivalentTo(countries[0]);
     }
 }

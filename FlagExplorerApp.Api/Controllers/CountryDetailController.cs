@@ -1,4 +1,4 @@
-﻿using FlagExplorerApp.Api.Models;
+﻿using FlagExplorerApp.Application.Common.Middleware;
 using FlagExplorerApp.Application.CountryDetail;
 using FlagExplorerApp.Application.CountryDetails.GetCountryDetailByName;
 using MediatR;
@@ -29,40 +29,23 @@ public class CountryDetailController : ControllerBase
 
     public async Task<ActionResult<CountryDetailDto>> GetCountryDetails(string name, CancellationToken cancellationToken)
     {
-        //For error handling I would suggest using a middleware or a global exception handler
-        //to avoid repeating the same code in every controller action.
         if (string.IsNullOrWhiteSpace(name))
         {
             return BadRequest(new ErrorResponse { Message = "The country name cannot be null or empty." });
         }
 
-        try
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return BadRequest(new ErrorResponse { Message = "The operation was canceled by the client." });
-            }
-
-            var countryDetail = await _mediator.Send(new GetCountryDetailByNameQuery(name), cancellationToken);
-
-            if (countryDetail == null)
-            {
-                return NotFound(new ErrorResponse { Message = $"Country with name '{name}' was not found." });
-            }
-
-            return Ok(countryDetail);
-        }
-        catch (OperationCanceledException)
+        if (cancellationToken.IsCancellationRequested)
         {
             return BadRequest(new ErrorResponse { Message = "The operation was canceled by the client." });
         }
-        catch (Exception ex)
+
+        var countryDetail = await _mediator.Send(new GetCountryDetailByNameQuery(name), cancellationToken);
+
+        if (countryDetail == null)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse
-            {
-                Message = "An unexpected error occurred while processing your request.",
-                Details = ex.Message 
-            });
+            return NotFound(new ErrorResponse { Message = $"Country with name '{name}' was not found." });
         }
+
+        return Ok(countryDetail);
     }
 }
