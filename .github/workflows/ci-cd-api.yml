@@ -22,4 +22,4 @@ jobs:
     - name: Build
       run: dotnet build FlagExplorerApp.sln --no-restore
     - name: Test
-      run: dotnet test FlagExplorerApp.sln --no-build -v normal --logger:"trx"
+      run: dotnet test FlagExplorerApp.sln --no-build -v normal
