@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using FlagExplorerApp.Application.CountryDetail;
 using FlagExplorerApp.Domain.Entities;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace FlagExplorerApp.Tests.Handlers;
 
@@ -14,6 +15,7 @@ public class GetCountryDetailByNameQueryHandlerTests
 {
     private Mock<ICountryDetailRepository> _countryDetailRepositoryMock;
     private Mock<IMapper> _mapperMock;
+    private Mock<IMemoryCache> _memoryCacheMock;
     private GetCountryDetailByNameQueryHandler _handler;
 
     [SetUp]
@@ -21,7 +23,16 @@ public class GetCountryDetailByNameQueryHandlerTests
     {
         _countryDetailRepositoryMock = new Mock<ICountryDetailRepository>();
         _mapperMock = new Mock<IMapper>();
-        _handler = new GetCountryDetailByNameQueryHandler(_mapperMock.Object, _countryDetailRepositoryMock.Object);
+        _memoryCacheMock = new Mock<IMemoryCache>();
+
+        // Mocking CreateEntry for IMemoryCache
+        var cacheEntryMock = new Mock<ICacheEntry>();
+        _memoryCacheMock
+            .Setup(x => x.CreateEntry(It.IsAny<object>()))
+            .Returns(cacheEntryMock.Object);
+
+        // Providing _memoryCacheMock in the handler
+        _handler = new GetCountryDetailByNameQueryHandler(_mapperMock.Object, _countryDetailRepositoryMock.Object, _memoryCacheMock.Object);
     }
 
     [Test]
@@ -39,6 +50,12 @@ public class GetCountryDetailByNameQueryHandlerTests
         _mapperMock
             .Setup(mapper => mapper.Map<CountryDetailDto>(countryDetail))
             .Returns(countryDetailDto);
+
+        // Mocking cache hit
+        object cachedValue = countryDetailDto;
+        _memoryCacheMock
+            .Setup(x => x.TryGetValue(It.IsAny<object>(), out cachedValue))
+            .Returns(false); // Simulate a cache miss
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -100,7 +117,7 @@ public class GetCountryDetailByNameQueryHandlerTests
     {
         // Arrange
         var query = new GetCountryDetailByNameQuery("TestCountry");
-        var countryDetail = new CountryDetail { Id= Guid.NewGuid().ToString(), Name = "TestCountry", Population = 1000, Capital = "TestCapital", Flag = "TestFlag" };
+        var countryDetail = new CountryDetail { Id = Guid.NewGuid().ToString(), Name = "TestCountry", Population = 1000, Capital = "TestCapital", Flag = "TestFlag" };
 
         _countryDetailRepositoryMock
             .Setup(repo => repo.FindByNameAsync(query.Name, It.IsAny<CancellationToken>()))

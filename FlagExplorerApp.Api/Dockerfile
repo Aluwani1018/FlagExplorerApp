@@ -28,3 +28,10 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "FlagExplorerApp.Api.dll"]
+
+FROM microsoft/windowsservercore
+ADD https://aka.ms/cosmosdb-emulator c:\\CosmosDBEmulator\\AzureCosmosDB.Emulator.msi
+RUN powershell.exe -Command $ErrorActionPreference = 'Stop'; \
+    Start-Process 'msiexec.exe' -ArgumentList '/i','c:\\CosmosDBEmulator\\AzureCosmosDB.Emulator.msi','/qn' -Wait
+EXPOSE 8081
+CMD ["c:\\CosmosDBEmulator\\startemu.cmd"]

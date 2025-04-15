@@ -9,9 +9,11 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddMemoryCache();
+
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly(), lifetime: ServiceLifetime.Transient);
 
-        services.AddAutoMapper(Assembly.GetExecutingAssembly());;
+        services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
         return services;
     }
