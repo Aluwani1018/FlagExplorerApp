@@ -1,0 +1,4 @@
+# Base image for Cosmos DB Emulator
+FROM mcr.microsoft.com/cosmosdb/windows/azure-cosmos-emulator:latest
+EXPOSE 8081
+CMD ["cmd.exe", "/C", "start /wait C:\\CosmosDBEmulator\\startemu.cmd"]
