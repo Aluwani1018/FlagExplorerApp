@@ -23,16 +23,38 @@ public class CountryDetailController : ControllerBase
     /// <returns>Details about the country.</returns>
     [HttpGet("{name}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+
     public async Task<ActionResult<CountryDetailDto>> GetCountryDetails(string name, CancellationToken cancellationToken)
     {
-        var countryDetail = await _mediator.Send(new GetCountryDetailByNameQuery(name), cancellationToken);
-
-        if (countryDetail == null)
+        if (string.IsNullOrWhiteSpace(name))
         {
-            return NotFound();
+            return BadRequest(new { Message = "The country name cannot be null or empty." });
         }
 
-        return Ok(countryDetail);
+        try
+        {
+            var countryDetail = await _mediator.Send(new GetCountryDetailByNameQuery(name), cancellationToken);
+
+            if (countryDetail == null)
+            {
+                return NotFound(new { Message = $"Country with name '{name}' was not found." });
+            }
+
+            return Ok(countryDetail);
+        }
+        catch (OperationCanceledException)
+        {
+            return BadRequest(new { Message = "The operation was canceled by the client." });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new
+            {
+                Message = "An unexpected error occurred while processing your request.",
+                Details = ex.Message 
+            });
+        }
     }
 }
