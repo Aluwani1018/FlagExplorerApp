@@ -6,33 +6,6 @@ on:
   pull_request:
     branches: [master]
 
-Your GitHub Actions workflow is mostly correct, but there are a few improvements and adjustments you can make to ensure it works seamlessly:
-Observations and Fixes:
-- Trigger Configuration:- The push trigger with branches: '**' will run the workflow on every branch push. If this is intentional, it's fine, but you might want to limit it to specific branches (e.g., main or develop) to avoid unnecessary builds.
-- The pull_request trigger is limited to the master branch. Ensure this aligns with your branching strategy.
-
-- Docker Build and Run:- The docker run command maps port 8080 on the host to port 80 in the container. Ensure this matches your application's configuration. If your app listens on port 8080 in the container, update the command to -p 8080:8080.
-
-- Dependency Restoration:- The dotnet restore step should ideally come before the Docker build step, as it ensures dependencies are restored before building the Docker image.
-
-- Environment Variables for Tests:- The DOTNET_TEST_ADAPTER_PATH environment variable points to a specific path. Ensure this path exists in your repository or adjust it accordingly.
-
-- Order of Steps:- The sequence of steps can be optimized for clarity and efficiency.
-
-
-Updated Workflow:
-Here's the revised version of your workflow:
-name: FlagExplorerApp.Api Pipeline
-
-on:
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
-    branches:
-      - master
-
 jobs:
   build:
 
