@@ -17,8 +17,11 @@ jobs:
       uses: actions/setup-dotnet@v4
     - name: Build Docker Image
       run: docker build -t flagexplorerapp-api -f path/to/Dockerfile .
-    - name: Run Docker Container
+      working-directory: ./repos/FlagExplorerApp
       run: docker run -d --name flagexplorerapp-api-container -p 8080:80 flagexplorerapp-api
+      working-directory: ./repos/FlagExplorerApp
+      run: docker run -d --name flagexplorerapp-api-container -p 8080:80 flagexplorerapp-api
+      working-directory: ./repos/FlagExplorerApp
     - name: Restore dependencies
       run: dotnet restore FlagExplorerApp.sln
     - name: Build
