@@ -1,4 +1,4 @@
-name: FlagExplorerApp.Api  Pipeline  
+name: FlagExplorerApp.Api CI/CD
 
 on:
   push:
@@ -7,34 +7,39 @@ on:
     branches: [master]
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
+  cosmosdb-emulator:
+    runs-on: windows-latest
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v4
+      - name: Build Cosmos DB Emulator Docker Image
+        run: docker build -t cosmosdb-emulator -f FlagExplorerApp.Api/Dockerfile.cosmosdb .
 
-    - name: Restore Dependencies
-      run: dotnet restore FlagExplorerApp.sln
+      - name: Run Cosmos DB Emulator
+        run: docker run -d --name cosmosdb-emulator-container -p 8081:8081 cosmosdb-emulator
 
-    - name: Build Docker Image
-      run: docker build --platform linux/amd64 -t flagexplorerapp-api -f FlagExplorerApp.Api/Dockerfile .
+  build:
+    needs: cosmosdb-emulator  # Ensure build waits for Cosmos DB Emulator
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Run Docker Container
-      run: docker run --platform linux/amd64 -d --name flagexplorerapp-api-container -p 8081:8081 flagexplorerapp-api
+      - name: Restore Dependencies
+        run: dotnet restore FlagExplorerApp.sln
 
-    - name: Build Cosmos DB Emulator Docker Image
-      run: docker build -t cosmosdb-emulator -f FlagExplorerApp.Api/Dockerfile.cosmosdb .
+      - name: Build Application
+        run: dotnet build FlagExplorerApp.sln --no-restore
 
-    - name: Run Cosmos DB Emulator
-      run: docker run -d --name cosmosdb-emulator-container -p 8081:8081 cosmosdb-emulator
+      - name: Run Unit Tests
+        env:
+          NUnit_DisableRegistry: "true"
+          DOTNET_TEST_ADAPTER_PATH: "./packages/NUnit3TestAdapter.4.2.0/tools"
+        run: dotnet test FlagExplorerApp.sln --no-build -v normal --logger:"console;verbosity=detailed"
 
-    - name: Build Application
-      run: dotnet build FlagExplorerApp.sln --no-restore
+      - name: Build Docker Image
+        run: docker build --platform linux/amd64 -t flagexplorerapp-api -f FlagExplorerApp.Api/Dockerfile .
 
-    - name: Run Tests
-      env:
-        NUnit_DisableRegistry: "true"
-        DOTNET_TEST_ADAPTER_PATH: "./packages/NUnit3TestAdapter.4.2.0/tools"
-      run: dotnet test FlagExplorerApp.sln --no-build -v normal --logger:"console;verbosity=detailed"
+      - name: Run Docker Container
+        run: docker run --platform linux/amd64 -d --name flagexplorerapp-api-container -p 8081:8081 flagexplorerapp-api
+
+      - name: Validate API Endpoints
+        run: curl http://localhost:8081/api/health || exit 1
