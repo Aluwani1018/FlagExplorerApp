@@ -24,6 +24,12 @@ jobs:
     - name: Run Docker Container
       run: docker run --platform linux/amd64 -d --name flagexplorerapp-api-container -p 8081:8081 flagexplorerapp-api
 
+    - name: Build Cosmos DB Emulator Docker Image
+      run: docker build -t cosmosdb-emulator -f FlagExplorerApp.Api/Dockerfile.cosmosdb .
+
+    - name: Run Cosmos DB Emulator
+      run: docker run -d --name cosmosdb-emulator-container -p 8081:8081 cosmosdb-emulator
+
     - name: Build Application
       run: dotnet build FlagExplorerApp.sln --no-restore
 

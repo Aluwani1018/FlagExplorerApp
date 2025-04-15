@@ -24,8 +24,3 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "FlagExplorerApp.Api.dll"]
-
-# This could be in a separate Dockerfile for Cosmos DB Emulator eg. Dockerfile.cosmosdb
-FROM mcr.microsoft.com/cosmosdb/windows/azure-cosmos-emulator:latest
-EXPOSE 8081
-CMD ["cmd.exe", "/C", "start /wait C:\\CosmosDBEmulator\\startemu.cmd"]
