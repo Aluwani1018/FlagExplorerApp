@@ -2,7 +2,7 @@ using System.Reflection;
 using FlagExplorerApp.Application.Countries.GetCountries; // Ensure this namespace is included
 using FlagExplorerApp.Application;
 using FlagExplorerApp.Infrastructure;
-using FlagExplorerApp.Application.Common.Middleware;
+using FlagExplorerApp.Api.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 

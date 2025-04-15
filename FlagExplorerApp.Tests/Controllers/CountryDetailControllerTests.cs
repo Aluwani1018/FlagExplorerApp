@@ -1,5 +1,5 @@
 ﻿using FlagExplorerApp.Api.Controllers;
-using FlagExplorerApp.Application.Common.Middleware;
+using FlagExplorerApp.Api.Models;
 using FlagExplorerApp.Application.CountryDetail;
 using FlagExplorerApp.Application.CountryDetails.GetCountryDetailByName;
 using FluentAssertions;

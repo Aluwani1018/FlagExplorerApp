@@ -1,4 +1,4 @@
-﻿using FlagExplorerApp.Application.Common.Middleware;
+﻿using FlagExplorerApp.Api.Models;
 using FlagExplorerApp.Application.Countries.GetCountries;
 using FlagExplorerApp.Application.Country;
 using MediatR;

@@ -1,4 +1,4 @@
-﻿using FlagExplorerApp.Application.Common.Middleware;
+﻿using FlagExplorerApp.Api.Middlewares;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
