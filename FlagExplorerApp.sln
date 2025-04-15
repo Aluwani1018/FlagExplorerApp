@@ -25,11 +25,6 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "FlagExplorerApp.Web", "Flag
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
-	ProjectSection(SolutionItems) = preProject
-		azure-pipelines.yml = azure-pipelines.yml
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5 - Tests", "5 - Tests", "{78093C22-670A-44AD-BD6A-095B19435D35}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlagExplorerApp.Tests", "FlagExplorerApp.Tests\FlagExplorerApp.Tests.csproj", "{7B8ECDA0-FA6E-4E3A-A20E-D8CA12879BDB}"

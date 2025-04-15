@@ -130,10 +130,13 @@ The pipeline is defined in `azure-pipelines.yml` and includes the following stag
 - **GET /countries/{name}**: Retrieve details about a specific country.
 
 ---
+## CI/CD
 
-## Deployment
+The project includes a GitHub Actions workflow for continuous integration and deployment. The workflow:
 
-The backend is deployed to Azure App Service. Update the `azure-pipelines.yml` file with your Azure subscription and resource details.
+1. Builds the application
+2. Executes all tests
+3. Generates a test coverage report
 
 ---
 
