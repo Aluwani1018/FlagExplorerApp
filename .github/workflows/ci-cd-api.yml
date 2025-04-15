@@ -22,7 +22,7 @@ jobs:
       run: docker build --platform linux/amd64 -t flagexplorerapp-api -f FlagExplorerApp.Api/Dockerfile .
 
     - name: Run Docker Container
-      run: docker run -d --name flagexplorerapp-api-container -p 8081:8081 flagexplorerapp-api
+      run: docker run --platform linux/amd64 -d --name flagexplorerapp-api-container -p 8081:8081 flagexplorerapp-api
 
     - name: Build Application
       run: dotnet build FlagExplorerApp.sln --no-restore
