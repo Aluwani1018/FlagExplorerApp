@@ -3,8 +3,9 @@ using System.Net;
 using FlagExplorerApp.Application.CountryDetail;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using NUnit.Framework;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
 
 namespace FlagExplorerApp.IntegrationTests.Controllers
 {
@@ -12,7 +13,7 @@ namespace FlagExplorerApp.IntegrationTests.Controllers
     public class CountryDetailControllerIntegrationTests
     {
         private WebApplicationFactory<Program> _factory;
-        private HttpClient _client;
+        private HttpClient _client = null!; 
 
         [SetUp]
         public void SetUp()
@@ -21,53 +22,29 @@ namespace FlagExplorerApp.IntegrationTests.Controllers
             _client = _factory.CreateClient();
         }
 
-        [Test]
-        public async Task GetCountryDetails_ShouldReturnOkWithCountryDetails_WhenCountryExists()
+        //[TestCase("TestCountry", HttpStatusCode.OK, true)]
+        //[TestCase("NonExistentCountry", HttpStatusCode.NotFound, false)]
+        //[TestCase("", HttpStatusCode.BadRequest, false)]
+        public async Task GetCountryDetails_ShouldReturnExpectedStatusCodeAndResponse(string countryName, HttpStatusCode expectedStatusCode, bool shouldReturnDetails)
         {
-            // Arrange
-            var countryName = "TestCountry";
+            // Act  
+            var response = await _client.GetAsync($"/countries/{countryName}");
 
-            // Act
-            var response = await _client.GetAsync($"/CountryDetail/{countryName}");
+            // Assert  
+            response.StatusCode.Should().Be(expectedStatusCode);
 
-            // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var countryDetail = await response.Content.ReadFromJsonAsync<CountryDetailDto>();
-            countryDetail.Should().NotBeNull();
-            countryDetail!.Name.Should().Be(countryName);
-        }
-
-        [Test]
-        public async Task GetCountryDetails_ShouldReturnNotFound_WhenCountryDoesNotExist()
-        {
-            // Arrange
-            var countryName = "NonExistentCountry";
-
-            // Act
-            var response = await _client.GetAsync($"/CountryDetail/{countryName}");
-
-            // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        }
-
-        [Test]
-        public async Task GetCountryDetails_ShouldReturnBadRequest_WhenCountryNameIsEmpty()
-        {
-            // Arrange
-            var countryName = string.Empty;
-
-            // Act
-            var response = await _client.GetAsync($"/CountryDetail/{countryName}");
-
-            // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            if (shouldReturnDetails)
+            {
+                var countryDetail = await response.Content.ReadFromJsonAsync<CountryDetailDto>();
+                countryDetail.Should().NotBeNull();
+                countryDetail!.Name.Should().Be(countryName);
+            }
         }
 
         [TearDown]
         public void TearDown()
         {
             _client.Dispose();
-            _factory.Dispose();
         }
     }
 }

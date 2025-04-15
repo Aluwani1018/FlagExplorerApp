@@ -12,9 +12,12 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="17.13.0" />
     <PackageReference Include="NUnit" Version="4.3.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="5.0.0" />
+    <PackageReference Include="NUnitTestAdapter" Version="2.3.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FlagExplorerApp.Api\FlagExplorerApp.Api.csproj" />
     <ProjectReference Include="..\FlagExplorerApp.Application\FlagExplorerApp.Application.csproj" />
   </ItemGroup>
 
