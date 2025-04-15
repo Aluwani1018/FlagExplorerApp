@@ -1,4 +1,4 @@
-# Countries of the World
+# Flag Explorer Web Application
 
 A modern Angular application that displays country flags and detailed information using the REST Countries API.
 
