@@ -22,4 +22,4 @@ jobs:
     - name: Build
       run: dotnet build FlagExplorerApp.sln --no-restore
     - name: Test
-      run: dotnet test FlagExplorerApp.sln --no-build -v normal
+      run: dotnet test FlagExplorerApp.sln --no-build -v normal --logger:"console;verbosity=detailed"
