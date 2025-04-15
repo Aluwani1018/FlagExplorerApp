@@ -10,8 +10,10 @@ jobs:
   cosmosdb-emulator:
     runs-on: windows-latest
     steps:
+      - name: Debug File Paths
+        run: ls -R
       - name: Build Cosmos DB Emulator Docker Image
-        run: docker build -t cosmosdb-emulator -f ./FlagExplorerApp.Api/Dockerfile.cosmosdb .
+        run: docker build -t cosmosdb-emulator -f FlagExplorerApp.Api/Dockerfile.cosmosdb FlagExplorerApp.Api/
 
       - name: Run Cosmos DB Emulator
         run: docker run -d --name cosmosdb-emulator-container -p 8081:8081 cosmosdb-emulator
