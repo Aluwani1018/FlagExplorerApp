@@ -15,7 +15,6 @@ jobs:
     - uses: actions/checkout@v4
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
-      dotnet-version: 8.0.x
     - name: Build Docker Image
       run: docker build -t flagexplorerapp-api .
     - name: Run Docker Container
